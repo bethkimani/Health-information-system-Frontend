@@ -1,93 +1,109 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaUsers } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
-const ViewClient = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [client, setClient] = useState(null);
-  const [error, setError] = useState(null);
+/**
+ * ClientsList component displays a list of registered clients with search functionality.
+ * @returns {JSX.Element} The clients list page.
+ */
+function ClientsList() {
+  // Load initial clients from localStorage or use default if none exist
+  const [clients, setClients] = useState(() => {
+    const savedClients = localStorage.getItem('clients');
+    return savedClients
+      ? JSON.parse(savedClients)
+      : [
+          { id: "C001", first_name: "Jane", last_name: "Doe", dob: "1990-01-01", gender: "Female", email: "jane.doe@example.com", phone_number: "123-456-7890", programs: ["TB Treatment"] },
+          { id: "C002", first_name: "John", last_name: "Smith", dob: "1985-05-15", gender: "Male", email: "john.smith@example.com", phone_number: "234-567-8901", programs: ["Malaria Prevention"] },
+          { id: "C003", first_name: "Emily", last_name: "Brown", dob: "1995-09-20", gender: "Female", email: "emily.brown@example.com", phone_number: "345-678-9012", programs: ["HIV Care"] },
+        ];
+  });
 
-  // Fetch client profile (simulated API call)
+  const [filteredClients, setFilteredClients] = useState(clients);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Update localStorage whenever clients change
   useEffect(() => {
-    const fetchClient = async () => {
-      try {
-        const clients = JSON.parse(localStorage.getItem('clients') || '[]');
-        const foundClient = clients.find((c) => c.id === id);
-        if (!foundClient) throw new Error('Client not found');
-        setClient(foundClient);
-      } catch (err) {
-        setError(err.message);
-      }
-    };
-    fetchClient();
-  }, [id]);
+    localStorage.setItem('clients', JSON.stringify(clients));
+    setFilteredClients(clients);
+  }, [clients]);
 
-  if (error) {
-    return (
-      <div className="flex-1 p-6 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold text-gray-800 mb-4">{error}</h1>
-          <button
-            onClick={() => navigate('/clients')}
-            className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
-          >
-            Back to Clients
-          </button>
-        </div>
-      </div>
+  // Handle search functionality
+  const handleSearch = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearchTerm(value);
+    setFilteredClients(
+      clients.filter((client) =>
+        `${client.first_name} ${client.last_name}`.toLowerCase().includes(value)
+      )
     );
-  }
-
-  if (!client) {
-    return <div className="p-6">Loading...</div>;
-  }
+  };
 
   return (
-    <div className="flex-1 p-6">
-      <div className="max-w-5xl mx-auto">
-        <div className="flex items-center mb-6">
-          <button
-            onClick={() => navigate('/clients')}
-            className="mr-4 text-orange-500 hover:text-orange-700"
-          >
-            <FaArrowLeft className="h-5 w-5" />
-          </button>
-          <h1 className="text-2xl font-semibold text-orange-500">Client Profile</h1>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="container mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-blue-900">Clients</h2>
+          <div className="flex gap-3">
+            <button className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition">
+              <Link to="/add-program">Create Program</Link>
+            </button>
+            <button className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition">
+              <Link to="/register-client">Register Client</Link>
+            </button>
+          </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-medium mb-4">Client Details</h2>
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <p><span className="text-gray-500">Client ID:</span> {client.id}</p>
-              <p><span className="text-gray-500">Name:</span> {client.name}</p>
-              <p><span className="text-gray-500">Date of Birth:</span> {client.dob}</p>
-              <p><span className="text-gray-500">Gender:</span> {client.gender}</p>
-            </div>
-            <div>
-              <h3 className="text-lg font-medium mb-2">Enrolled Programs</h3>
-              {client.programs.length > 0 ? (
-                <ul className="list-disc pl-5">
-                  {client.programs.map((program, index) => (
-                    <li key={index}>{program}</li>
-                  ))}
-                </ul>
+
+        <div className="mb-6">
+          <input
+            type="text"
+            className="w-full max-w-md p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            placeholder="Search clients..."
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+        </div>
+
+        <div className="bg-white shadow-md rounded-lg overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-blue-900 text-white">
+              <tr>
+                <th className="px-6 py-3 text-left text-sm font-medium">Client ID</th>
+                <th className="px-6 py-3 text-left text-sm font-medium">Name</th>
+                <th className="px-6 py-3 text-left text-sm font-medium">DOB</th>
+                <th className="px-6 py-3 text-left text-sm font-medium">Gender</th>
+                <th className="px-6 py-3 text-left text-sm font-medium">Program</th>
+                <th className="px-6 py-3 text-left text-sm font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {filteredClients.length > 0 ? (
+                filteredClients.map((client) => (
+                  <tr key={client.id} className="hover:bg-gray-50 transition">
+                    <td className="px-6 py-4 text-gray-800">{client.id}</td>
+                    <td className="px-6 py-4 text-gray-800">{`${client.first_name} ${client.last_name}`}</td>
+                    <td className="px-6 py-4 text-gray-600">{client.dob}</td>
+                    <td className="px-6 py-4 text-gray-600">{client.gender}</td>
+                    <td className="px-6 py-4 text-gray-600">{client.programs.join(', ') || 'None'}</td>
+                    <td className="px-6 py-4">
+                      <Link to={`/clients/${client.id}`} className="text-blue-600 hover:underline">
+                        View
+                      </Link>
+                    </td>
+                  </tr>
+                ))
               ) : (
-                <p>No programs enrolled</p>
+                <tr>
+                  <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                    No clients found.
+                  </td>
+                </tr>
               )}
-            </div>
-          </div>
-          <div className="mt-6">
-            <h3 className="text-lg font-medium mb-2">API Access</h3>
-            <p className="text-gray-500">Retrieve this profile via API:</p>
-            <code className="block bg-gray-100 p-2 rounded mt-2">
-              GET /api/clients/{client.id}
-            </code>
-          </div>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   );
-};
+}
 
-export default ViewClient;
+export default ClientsList;

@@ -1,21 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-// Dummy data for health programs
-const initialPrograms = [
-  { id: "P001", name: "TB Treatment", description: "Tuberculosis treatment and monitoring program" },
-  { id: "P002", name: "Malaria Prevention", description: "Malaria prevention and education program" },
-  { id: "P003", name: "HIV Care", description: "HIV/AIDS care and support program" },
-];
-
+/**
+ * ProgramsPage component manages health programs, allowing doctors to view, search, and delete programs.
+ * @returns {JSX.Element} The programs management page.
+ */
 function ProgramsPage() {
-  const [programs, setPrograms] = useState(initialPrograms);
-  const [filteredPrograms, setFilteredPrograms] = useState(initialPrograms);
+  // Load initial programs from localStorage or use default if none exist
+  const [programs, setPrograms] = useState(() => {
+    const savedPrograms = localStorage.getItem('programs');
+    return savedPrograms
+      ? JSON.parse(savedPrograms)
+      : [
+          { id: "P001", name: "TB Treatment", description: "Tuberculosis treatment and monitoring program" },
+          { id: "P002", name: "Malaria Prevention", description: "Malaria prevention and education program" },
+          { id: "P003", name: "HIV Care", description: "HIV/AIDS care and support program" },
+        ];
+  });
+
+  const [filteredPrograms, setFilteredPrograms] = useState(programs);
   const [searchTerm, setSearchTerm] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
 
+  // Update localStorage whenever programs change
+  useEffect(() => {
+    localStorage.setItem('programs', JSON.stringify(programs));
+    setFilteredPrograms(programs);
+  }, [programs]);
+
+  // Handle search functionality
   const handleSearch = (event) => {
     const value = event.target.value.toLowerCase();
     setSearchTerm(value);
@@ -26,10 +41,10 @@ function ProgramsPage() {
     );
   };
 
+  // Handle program deletion
   const handleDelete = () => {
     if (!selectedId) return;
     setPrograms(programs.filter(program => program.id !== selectedId));
-    setFilteredPrograms(filteredPrograms.filter(program => program.id !== selectedId));
     setShowConfirm(false);
     setSelectedId(null);
     setShowSuccess(true);
@@ -60,7 +75,7 @@ function ProgramsPage() {
       <table className="w-full border-collapse border border-gray-200">
         <thead>
           <tr className="bg-gray-100 text-blue-900">
-            <th className="border border-gray-200 px-4 py-2">PROGRAM ID</th>
+ даними            <th className="border border-gray-200 px-4 py-2">PROGRAM ID</th>
             <th className="border border-gray-200 px-4 py-2">PROGRAM NAME</th>
             <th className="border border-gray-200 px-4 py-2">DESCRIPTION</th>
             <th className="border border-gray-200 px-4 py-2">ACTIONS</th>
