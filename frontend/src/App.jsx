@@ -3,6 +3,10 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Navigation from './components/Navigation';
+import Suppliers from './pages/Suppliers';
+import ViewSupplier from './pages/ViewSupplier';
+import EditSupplier from './pages/EditSupplier';
+import UploadDocuments from './pages/UploadDocuments';
 import { useEffect } from 'react';
 
 function App() {
@@ -64,6 +68,10 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/suppliers" element={<Suppliers />} />
+              <Route path="/suppliers/:id" element={<ViewSupplier />} />
+              <Route path="/suppliers/edit/:id" element={<EditSupplier />} />
+              <Route path="/suppliers/:id/documents" element={<UploadDocuments />} />
               <Route path="/patients" element={<div className="text-center"><h2 className="text-xl">Patients Page (Under Construction)</h2></div>} />
               <Route path="/records" element={<div className="text-center"><h2 className="text-xl">Records Page (Under Construction)</h2></div>} />
               <Route path="/messages" element={<div className="text-center"><h2 className="text-xl">Messages Page (Under Construction)</h2></div>} />

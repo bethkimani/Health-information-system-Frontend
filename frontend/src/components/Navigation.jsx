@@ -5,20 +5,20 @@ import {
   FaUser,
   FaClipboardList,
   FaEnvelope,
+  FaBox,
 } from 'react-icons/fa';
 
 function Navigation({ children }) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-
-  const toggleSidebar = () => setIsCollapsed(!isCollapsed);
 
   const menuItems = [
     { name: 'Dashboard', icon: FaBars, path: '/dashboard' },
     { name: 'Patients', icon: FaUser, path: '/patients' },
     { name: 'Records', icon: FaClipboardList, path: '/records' },
     { name: 'Messages', icon: FaEnvelope, path: '/messages' },
+    { name: 'Suppliers', icon: FaBox, path: '/suppliers' },
   ];
 
   const handleLogout = () => {
