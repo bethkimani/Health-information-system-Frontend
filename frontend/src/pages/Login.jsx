@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import LiveChat from "../components/LiveChat";
 
 /**
  * Login component handles user authentication.
- * Includes a live chat feature at the bottom right and navigation between Login and Sign Up.
+ * Includes a live chat feature at the bottom right.
  * @returns {JSX.Element} The login page.
  */
 export default function Login() {
@@ -40,22 +40,6 @@ export default function Login() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100 font-poppins relative">
       <div className="bg-white rounded-3xl shadow-xl relative overflow-hidden w-full max-w-3xl min-h-[480px] flex">
         <div className="w-1/2 bg-[#0056A0] flex flex-col p-10 z-10">
-          {/* Navigation Tabs */}
-          <div className="flex justify-center mb-6">
-            <Link
-              to="/login"
-              className="text-white text-lg font-semibold px-4 py-2 border-b-2 border-white"
-            >
-              Login
-            </Link>
-            <Link
-              to="/register"
-              className="text-white text-lg font-semibold px-4 py-2 border-b-2 border-transparent hover:border-white transition"
-            >
-              Sign Up
-            </Link>
-          </div>
-
           {/* Form */}
           <form onSubmit={handleSubmit} autoComplete="off" className="w-full">
             <h1 className="text-white text-3xl font-semibold mb-2">CEMA Health System</h1>

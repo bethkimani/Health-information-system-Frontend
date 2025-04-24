@@ -1,6 +1,5 @@
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import Login from './pages/Login';
-import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Navigation from './components/Navigation';
 import ClientsList from './pages/clients/ClientsList';
@@ -41,7 +40,6 @@ function App() {
           <div className="p-6">
             <Routes>
               <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={<Dashboard onLogout={handleLogout} />} />
               <Route path="/clients" element={<ClientsList />} />
               <Route path="/clients/:id" element={<ViewClient />} />
@@ -60,11 +58,7 @@ function App() {
         <div className="p-6">
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route
-              path="/"
-              element={<Login />}
-            />
+            <Route path="/" element={<Login />} />
           </Routes>
         </div>
       )}
