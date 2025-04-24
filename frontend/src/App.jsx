@@ -7,8 +7,8 @@ import Suppliers from './pages/Suppliers';
 import ViewSupplier from './pages/ViewSupplier';
 import EditSupplier from './pages/EditSupplier';
 import UploadDocuments from './pages/UploadDocuments';
-import ClientsList from './pages/clients/ClientsList'; // Corrected path
-import ViewClient from './pages/clients/ViewClient'; // Corrected path
+import ClientsList from './pages/clients/ClientsList'; // Path matches src/pages/clients/ClientsList.jsx
+import ViewClient from './pages/clients/ViewClient'; // Path matches src/pages/clients/ViewClient.jsx
 import { useEffect } from 'react';
 
 function App() {
@@ -20,12 +20,14 @@ function App() {
     navigate("/login");
   };
 
+  // Redirect to dashboard if logged in and on the root path
   useEffect(() => {
     if (isLoggedIn && window.location.pathname === '/') {
       navigate('/dashboard');
     }
   }, [isLoggedIn, navigate]);
 
+  // Format the current date for display
   const currentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     day: 'numeric',
@@ -35,6 +37,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100">
+      {/* Top Navigation Bar */}
       <nav className="bg-white p-4 shadow-md flex justify-between items-center">
         <div className="flex items-center">
           <h1 className="text-2xl font-semibold text-gray-800">CEMA Health System</h1>
@@ -44,25 +47,44 @@ function App() {
             <>
               <span className="text-gray-600">Hello, User</span>
               <span className="text-gray-600 flex items-center">
-                <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                <svg
+                  className="w-5 h-5 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
                 </svg>
                 32°C Nairobi
               </span>
               <span className="text-gray-600">{currentDate}</span>
-              <button onClick={handleLogout} className="text-gray-600 hover:text-gray-800">
+              <button
+                onClick={handleLogout}
+                className="text-gray-600 hover:text-gray-800"
+              >
                 Logout
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="text-gray-600 hover:text-gray-800">Login</Link>
-              <Link to="/register" className="text-gray-600 hover:text-gray-800">Register</Link>
+              <Link to="/login" className="text-gray-600 hover:text-gray-800">
+                Login
+              </Link>
+              <Link to="/register" className="text-gray-600 hover:text-gray-800">
+                Register
+              </Link>
             </>
           )}
         </div>
       </nav>
 
+      {/* Main Content */}
       {isLoggedIn ? (
         <Navigation>
           <div className="p-6">
@@ -76,8 +98,22 @@ function App() {
               <Route path="/suppliers/:id/documents" element={<UploadDocuments />} />
               <Route path="/clients" element={<ClientsList />} />
               <Route path="/clients/:id" element={<ViewClient />} />
-              <Route path="/patients" element={<div className="text-center"><h2 className="text-xl">Patients Page (Under Construction)</h2></div>} />
-              <Route path="/messages" element={<div className="text-center"><h2 className="text-xl">Messages Page (Under Construction)</h2></div>} />
+              <Route
+                path="/patients"
+                element={
+                  <div className="text-center">
+                    <h2 className="text-xl">Patients Page (Under Construction)</h2>
+                  </div>
+                }
+              />
+              <Route
+                path="/messages"
+                element={
+                  <div className="text-center">
+                    <h2 className="text-xl">Messages Page (Under Construction)</h2>
+                  </div>
+                }
+              />
               <Route path="/" element={<Dashboard />} />
             </Routes>
           </div>
