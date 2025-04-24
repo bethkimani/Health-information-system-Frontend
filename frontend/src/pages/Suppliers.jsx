@@ -91,7 +91,7 @@ const Suppliers = () => {
   };
 
   return (
-    <Navigation>
+    
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-2xl font-semibold text-gray-800">Suppliers</h3>
@@ -225,7 +225,7 @@ const Suppliers = () => {
           supplierName={selectedSupplier?.name}
         />
       </div>
-    </Navigation>
+    
   );
 };
 
