@@ -1,15 +1,17 @@
 import React, { useEffect, useRef } from "react";
 import { Chart, registerables } from "chart.js";
-import { useNavigate } from "react-router-dom";
 
 Chart.register(...registerables);
 
+/**
+ * Dashboard component displays key metrics and charts for the CEMA Health System.
+ * @returns {JSX.Element} The dashboard page.
+ */
 const Dashboard = () => {
   const patientsChartRef = useRef(null);
   const requestsChartRef = useRef(null);
   const patientsChartInstance = useRef(null);
   const requestsChartInstance = useRef(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     // Destroy existing chart instances before creating new ones
@@ -73,11 +75,6 @@ const Dashboard = () => {
       }
     };
   }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    navigate("/login");
-  };
 
   return (
     <div className="flex-1">
