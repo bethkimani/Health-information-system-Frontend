@@ -1,5 +1,4 @@
 import { Route, Routes, useNavigate } from 'react-router-dom';
-import { FaUserCircle } from 'react-icons/fa'; // Import user profile icon
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -35,58 +34,15 @@ function App() {
     }
   }, [isLoggedIn, navigate]);
 
-  const currentDate = new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
-
   return (
     <div className="min-h-screen bg-gray-100">
-      {isLoggedIn && (
-        <nav className="bg-white p-4 shadow-md flex justify-between items-center">
-          <div className="flex items-center">
-            {/* Removed "CEMA Health System" title */}
-          </div>
-          <div className="flex items-center space-x-4">
-            <span className="text-gray-600">Hello, User</span>
-            <span className="text-gray-600 flex items-center">
-              <svg
-                className="w-5 h-5 mr-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                />
-              </svg>
-              32°C Nairobi
-            </span>
-            <span className="text-gray-600">{currentDate}</span>
-            <button
-              onClick={handleLogout}
-              className="text-gray-600 hover:text-gray-800"
-              title="Logout"
-            >
-              <FaUserCircle className="text-2xl" />
-            </button>
-          </div>
-        </nav>
-      )}
-
       {isLoggedIn ? (
         <Navigation>
           <div className="p-6">
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard onLogout={handleLogout} />} />
               <Route path="/clients" element={<ClientsList />} />
               <Route path="/clients/:id" element={<ViewClient />} />
               <Route path="/register-client" element={<RegisterClient />} />
@@ -96,7 +52,7 @@ function App() {
               <Route path="/health-records" element={<HealthRecordsPage />} />
               <Route path="/team" element={<Team />} />
               <Route path="/messages" element={<MessagesPage />} />
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<Dashboard onLogout={handleLogout} />} />
             </Routes>
           </div>
         </Navigation>
