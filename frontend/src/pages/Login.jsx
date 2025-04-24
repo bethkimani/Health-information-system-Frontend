@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LiveChat from "../components/LiveChat";
 
+/**
+ * Login component handles user authentication.
+ * Includes a live chat feature at the bottom right.
+ * @returns {JSX.Element} The login page.
+ */
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +37,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 font-poppins">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 font-poppins relative">
       <div className="bg-white rounded-3xl shadow-xl relative overflow-hidden w-full max-w-3xl min-h-[480px] flex">
         <div className="w-1/2 bg-[#0056A0] flex items-center justify-center flex-col p-10 z-10">
           <form onSubmit={handleSubmit} autoComplete="off" className="w-full">
@@ -78,6 +84,7 @@ export default function Login() {
           <p className="text-sm text-gray-600">Data-Driven Health Solutions</p>
         </div>
       </div>
+      <LiveChat />
     </div>
   );
 }
