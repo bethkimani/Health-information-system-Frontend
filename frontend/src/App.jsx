@@ -3,12 +3,13 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Navigation from './components/Navigation';
-import Suppliers from './pages/Suppliers';
-import ViewSupplier from './pages/ViewSupplier';
-import EditSupplier from './pages/EditSupplier';
-import UploadDocuments from './pages/UploadDocuments';
-import ClientsList from './pages/clients/ClientsList'; // Path matches src/pages/clients/ClientsList.jsx
-import ViewClient from './pages/clients/ViewClient'; // Path matches src/pages/clients/ViewClient.jsx
+import ClientsList from './pages/clients/ClientsList';
+import ViewClient from './pages/clients/ViewClient';
+import ProgramsPage from './pages/ProgramsPage';
+import AppointmentsPage from './pages/AppointmentsPage';
+import HealthRecordsPage from './pages/HealthRecordsPage';
+import Team from './pages/Team';
+import MessagesPage from './pages/MessagesPage';
 import { useEffect } from 'react';
 
 function App() {
@@ -20,14 +21,12 @@ function App() {
     navigate("/login");
   };
 
-  // Redirect to dashboard if logged in and on the root path
   useEffect(() => {
     if (isLoggedIn && window.location.pathname === '/') {
       navigate('/dashboard');
     }
   }, [isLoggedIn, navigate]);
 
-  // Format the current date for display
   const currentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     day: 'numeric',
@@ -37,7 +36,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Top Navigation Bar */}
       <nav className="bg-white p-4 shadow-md flex justify-between items-center">
         <div className="flex items-center">
           <h1 className="text-2xl font-semibold text-gray-800">CEMA Health System</h1>
@@ -84,7 +82,6 @@ function App() {
         </div>
       </nav>
 
-      {/* Main Content */}
       {isLoggedIn ? (
         <Navigation>
           <div className="p-6">
@@ -92,28 +89,13 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/suppliers" element={<Suppliers />} />
-              <Route path="/suppliers/:id" element={<ViewSupplier />} />
-              <Route path="/suppliers/edit/:id" element={<EditSupplier />} />
-              <Route path="/suppliers/:id/documents" element={<UploadDocuments />} />
               <Route path="/clients" element={<ClientsList />} />
               <Route path="/clients/:id" element={<ViewClient />} />
-              <Route
-                path="/patients"
-                element={
-                  <div className="text-center">
-                    <h2 className="text-xl">Patients Page (Under Construction)</h2>
-                  </div>
-                }
-              />
-              <Route
-                path="/messages"
-                element={
-                  <div className="text-center">
-                    <h2 className="text-xl">Messages Page (Under Construction)</h2>
-                  </div>
-                }
-              />
+              <Route path="/programs" element={<ProgramsPage />} />
+              <Route path="/appointments" element={<AppointmentsPage />} />
+              <Route path="/health-records" element={<HealthRecordsPage />} />
+              <Route path="/team" element={<Team />} />
+              <Route path="/messages" element={<MessagesPage />} />
               <Route path="/" element={<Dashboard />} />
             </Routes>
           </div>
