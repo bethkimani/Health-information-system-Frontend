@@ -1,21 +1,26 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 
+/**
+ * ClientSearch component to search for clients.
+ * Uses mock data to simulate search results.
+ */
 const ClientSearch = () => {
   const [query, setQuery] = useState('');
   const [clients, setClients] = useState([]);
 
-  const handleSearch = async () => {
-    try {
-      const response = await axios.get(`http://localhost:5000/api/clients/search?query=${query}`, {
-        headers: { Authorization: `Bearer YOUR_JWT_TOKEN` },
-      });
-      setClients(response.data);
-    } catch (error) {
-      console.error(error);
-      alert('Error searching clients');
-    }
+  // Mock data for clients
+  const mockClients = [
+    { id: '1', name: 'John Doe', email: 'john@example.com' },
+    { id: '2', name: 'Jane Smith', email: 'jane@example.com' },
+  ];
+
+  const handleSearch = () => {
+    // Simulate search by filtering mock data
+    const filteredClients = mockClients.filter((client) =>
+      client.name.toLowerCase().includes(query.toLowerCase())
+    );
+    setClients(filteredClients);
   };
 
   return (
@@ -29,14 +34,20 @@ const ClientSearch = () => {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search by name..."
         />
-        <button onClick={handleSearch} className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
+        <button
+          onClick={handleSearch}
+          className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+        >
           Search
         </button>
       </div>
       <ul className="space-y-2">
         {clients.map((client) => (
           <li key={client.id} className="border-b py-2">
-            <Link to={`/client/${client.id}`} className="text-blue-600 hover:underline">
+            <Link
+              to={`/client/${client.id}`}
+              className="text-blue-600 hover:underline"
+            >
               {client.name} ({client.email})
             </Link>
           </li>

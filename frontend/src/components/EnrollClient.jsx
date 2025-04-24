@@ -1,43 +1,27 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
 
+/**
+ * EnrollClient component to enroll a client in a program.
+ * Uses mock data to simulate client and program selection.
+ */
 const EnrollClient = () => {
-  const [clients, setClients] = useState([]);
-  const [programs, setPrograms] = useState([]);
   const [formData, setFormData] = useState({ client_id: '', program_id: '' });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const clientsRes = await axios.get('http://localhost:5000/api/clients/search?query=', {
-          headers: { Authorization: `Bearer YOUR_JWT_TOKEN` },
-        });
-        const programsRes = await axios.get('http://localhost:5000/api/programs', {
-          headers: { Authorization: `Bearer YOUR_JWT_TOKEN` },
-        });
-        setClients(clientsRes.data);
-        setPrograms(programsRes.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchData();
-  }, []);
+  // Mock data for clients and programs
+  const clients = [
+    { id: '1', name: 'John Doe' },
+    { id: '2', name: 'Jane Smith' },
+  ];
+  const programs = [
+    { id: '1', name: 'TB Program' },
+    { id: '2', name: 'HIV Program' },
+  ];
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await axios.post(`http://localhost:5000/api/clients/${formData.client_id}/enroll`, {
-        program_id: formData.program_id,
-      }, {
-        headers: { Authorization: `Bearer YOUR_JWT_TOKEN` },
-      });
-      alert('Client enrolled successfully!');
-      setFormData({ client_id: '', program_id: '' });
-    } catch (error) {
-      console.error(error);
-      alert('Error enrolling client');
-    }
+    // Simulate successful enrollment
+    alert('Client enrolled successfully! (Mock)');
+    setFormData({ client_id: '', program_id: '' });
   };
 
   return (
@@ -54,7 +38,9 @@ const EnrollClient = () => {
           >
             <option value="">Select Client</option>
             {clients.map((client) => (
-              <option key={client.id} value={client.id}>{client.name}</option>
+              <option key={client.id} value={client.id}>
+                {client.name}
+              </option>
             ))}
           </select>
         </div>
@@ -68,11 +54,16 @@ const EnrollClient = () => {
           >
             <option value="">Select Program</option>
             {programs.map((program) => (
-              <option key={program.id} value={program.id}>{program.name}</option>
+              <option key={program.id} value={program.id}>
+                {program.name}
+              </option>
             ))}
           </select>
         </div>
-        <button type="submit" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+        >
           Enroll
         </button>
       </form>

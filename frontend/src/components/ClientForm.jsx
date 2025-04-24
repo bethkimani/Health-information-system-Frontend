@@ -1,21 +1,17 @@
 import { useState } from 'react';
-import axios from 'axios';
 
+/**
+ * ClientForm component to register a new client.
+ * Uses mock data to simulate client registration.
+ */
 const ClientForm = () => {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await axios.post('http://localhost:5000/api/clients', formData, {
-        headers: { Authorization: `Bearer YOUR_JWT_TOKEN` },
-      });
-      alert('Client registered successfully!');
-      setFormData({ name: '', email: '', phone: '' });
-    } catch (error) {
-      console.error(error);
-      alert('Error registering client');
-    }
+    // Simulate successful client registration
+    alert('Client registered successfully! (Mock)');
+    setFormData({ name: '', email: '', phone: '' });
   };
 
   return (
@@ -52,7 +48,10 @@ const ClientForm = () => {
             required
           />
         </div>
-        <button type="submit" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+        >
           Register
         </button>
       </form>

@@ -1,21 +1,17 @@
 import { useState } from 'react';
-import axios from 'axios';
 
+/**
+ * ProgramForm component to create a health program.
+ * Uses mock data to simulate program creation without backend.
+ */
 const ProgramForm = () => {
   const [formData, setFormData] = useState({ name: '', description: '' });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await axios.post('http://localhost:5000/api/programs', formData, {
-        headers: { Authorization: `Bearer YOUR_JWT_TOKEN` },
-      });
-      alert('Program created successfully!');
-      setFormData({ name: '', description: '' });
-    } catch (error) {
-      console.error(error);
-      alert('Error creating program');
-    }
+    // Simulate successful program creation
+    alert('Program created successfully! (Mock)');
+    setFormData({ name: '', description: '' });
   };
 
   return (
@@ -40,7 +36,10 @@ const ProgramForm = () => {
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           />
         </div>
-        <button type="submit" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+        >
           Create
         </button>
       </form>
