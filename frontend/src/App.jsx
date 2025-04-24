@@ -2,7 +2,7 @@ import { Route, Routes, Link, useNavigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import Navigation from './components/Navigation'; // Import the Navigation component
+import Navigation from './components/Navigation';
 import { useEffect } from 'react';
 
 function App() {
@@ -14,14 +14,12 @@ function App() {
     navigate("/login");
   };
 
-  // Redirect to dashboard if logged in and on the home route
   useEffect(() => {
     if (isLoggedIn && window.location.pathname === '/') {
       navigate('/dashboard');
     }
   }, [isLoggedIn, navigate]);
 
-  // Get current date for display
   const currentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     day: 'numeric',
@@ -31,7 +29,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Top Navigation Bar */}
       <nav className="bg-white p-4 shadow-md flex justify-between items-center">
         <div className="flex items-center">
           <h1 className="text-2xl font-semibold text-gray-800">CEMA Health System</h1>
@@ -60,7 +57,6 @@ function App() {
         </div>
       </nav>
 
-      {/* Main Content with Sidebar */}
       {isLoggedIn ? (
         <Navigation>
           <div className="p-6">
@@ -71,10 +67,7 @@ function App() {
               <Route path="/patients" element={<div className="text-center"><h2 className="text-xl">Patients Page (Under Construction)</h2></div>} />
               <Route path="/records" element={<div className="text-center"><h2 className="text-xl">Records Page (Under Construction)</h2></div>} />
               <Route path="/messages" element={<div className="text-center"><h2 className="text-xl">Messages Page (Under Construction)</h2></div>} />
-              <Route
-                path="/"
-                element={<Dashboard />}
-              />
+              <Route path="/" element={<Dashboard />} />
             </Routes>
           </div>
         </Navigation>
