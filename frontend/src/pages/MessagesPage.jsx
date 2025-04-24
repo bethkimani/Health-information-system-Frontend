@@ -1,33 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaEnvelope, FaPaperPlane } from 'react-icons/fa';
-
-// Dummy data for messages
-const initialMessages = [
-  {
-    id: "M001",
-    sender: "Dr. John Smith",
-    recipient: "Nurse Emily Brown",
-    subject: "Patient Update: Jane Doe",
-    body: "Please ensure Jane Doe receives her TB medication on time.",
-    timestamp: "2025-04-24 09:00 AM",
-  },
-  {
-    id: "M002",
-    sender: "Admin Sarah Davis",
-    recipient: "Dr. John Smith",
-    subject: "Meeting Reminder",
-    body: "Reminder: Staff meeting at 2 PM today.",
-    timestamp: "2025-04-24 08:30 AM",
-  },
-  {
-    id: "M003",
-    sender: "Nurse Emily Brown",
-    recipient: "Dr. Michael Lee",
-    subject: "Lab Results",
-    body: "Lab results for John Smith are ready for review.",
-    timestamp: "2025-04-23 03:15 PM",
-  },
-];
 
 // Dummy data for team members (for recipient dropdown)
 const teamMembers = [
@@ -37,8 +9,48 @@ const teamMembers = [
   { id: "T004", name: "Dr. Michael Lee" },
 ];
 
+/**
+ * MessagesPage component allows users to view, search, and send messages.
+ * Includes a notification system for unread messages and integrates with LiveChat.
+ * @returns {JSX.Element} The messages page.
+ */
 function MessagesPage() {
-  const [messages, setMessages] = useState(initialMessages);
+  // Load initial messages from localStorage or use default if none exist
+  const [messages, setMessages] = useState(() => {
+    const storedMessages = localStorage.getItem('cemaMessages');
+    return storedMessages
+      ? JSON.parse(storedMessages)
+      : [
+          {
+            id: "M001",
+            sender: "Dr. John Smith",
+            recipient: "Nurse Emily Brown",
+            subject: "Patient Update: Jane Doe",
+            body: "Please ensure Jane Doe receives her TB medication on time.",
+            timestamp: "2025-04-24 09:00 AM",
+            read: true,
+          },
+          {
+            id: "M002",
+            sender: "Admin Sarah Davis",
+            recipient: "Dr. John Smith",
+            subject: "Meeting Reminder",
+            body: "Reminder: Staff meeting at 2 PM today.",
+            timestamp: "2025-04-24 08:30 AM",
+            read: false,
+          },
+          {
+            id: "M003",
+            sender: "Nurse Emily Brown",
+            recipient: "Dr. Michael Lee",
+            subject: "Lab Results",
+            body: "Lab results for John Smith are ready for review.",
+            timestamp: "2025-04-23 03:15 PM",
+            read: true,
+          },
+        ];
+  });
+
   const [showComposeModal, setShowComposeModal] = useState(false);
   const [formData, setFormData] = useState({
     recipient: "",
@@ -46,6 +58,18 @@ function MessagesPage() {
     body: "",
   });
   const [searchTerm, setSearchTerm] = useState("");
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Update localStorage whenever messages change
+  useEffect(() => {
+    localStorage.setItem('cemaMessages', JSON.stringify(messages));
+  }, [messages]);
+
+  // Calculate unread messages count
+  useEffect(() => {
+    const count = messages.filter((msg) => !msg.read).length;
+    setUnreadCount(count);
+  }, [messages]);
 
   // Handle input changes in the compose form
   const handleInputChange = (e) => {
@@ -69,10 +93,19 @@ function MessagesPage() {
         minute: 'numeric',
         hour12: true,
       }),
+      read: false,
     };
     setMessages([newMessage, ...messages]);
     setFormData({ recipient: "", subject: "", body: "" });
     setShowComposeModal(false);
+  };
+
+  // Mark a message as read
+  const markAsRead = (messageId) => {
+    const updatedMessages = messages.map((msg) =>
+      msg.id === messageId ? { ...msg, read: true } : msg
+    );
+    setMessages(updatedMessages);
   };
 
   // Filter messages based on search term
@@ -88,7 +121,14 @@ function MessagesPage() {
       <div className="container mx-auto">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-blue-900">Messages</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-3xl font-bold text-blue-900">Messages</h2>
+            {unreadCount > 0 && (
+              <span className="bg-red-500 text-white text-sm font-semibold px-2 py-1 rounded-full">
+                {unreadCount} Unread
+              </span>
+            )}
+          </div>
           <button
             className="bg-blue-900 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-800 transition flex items-center gap-2"
             onClick={() => setShowComposeModal(true)}
@@ -122,7 +162,11 @@ function MessagesPage() {
             <tbody className="divide-y divide-gray-200">
               {filteredMessages.length > 0 ? (
                 filteredMessages.map((message) => (
-                  <tr key={message.id} className="hover:bg-gray-50 transition">
+                  <tr
+                    key={message.id}
+                    className={`hover:bg-gray-50 transition cursor-pointer ${!message.read ? 'bg-yellow-50' : ''}`}
+                    onClick={() => markAsRead(message.id)}
+                  >
                     <td className="px-6 py-4 text-gray-800">{message.sender}</td>
                     <td className="px-6 py-4 text-gray-600">{message.recipient}</td>
                     <td className="px-6 py-4 text-gray-600">{message.subject}</td>
