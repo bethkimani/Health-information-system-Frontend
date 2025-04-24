@@ -1,4 +1,5 @@
 import { Route, Routes, useNavigate } from 'react-router-dom';
+import { FaUserCircle } from 'react-icons/fa'; // Import user profile icon
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -46,7 +47,7 @@ function App() {
       {isLoggedIn && (
         <nav className="bg-white p-4 shadow-md flex justify-between items-center">
           <div className="flex items-center">
-            <h1 className="text-2xl font-semibold text-gray-800">CEMA Health System</h1>
+            {/* Removed "CEMA Health System" title */}
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-gray-600">Hello, User</span>
@@ -71,8 +72,9 @@ function App() {
             <button
               onClick={handleLogout}
               className="text-gray-600 hover:text-gray-800"
+              title="Logout"
             >
-              Logout
+              <FaUserCircle className="text-2xl" />
             </button>
           </div>
         </nav>
