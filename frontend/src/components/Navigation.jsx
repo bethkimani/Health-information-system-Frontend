@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import {
   FaBars,
-  FaUser,
+  FaSignOutAlt, // Updated to use logout icon
   FaUsers,
   FaEnvelope,
   FaUserMd,
@@ -19,7 +19,7 @@ function Navigation({ children }) {
 
   const menuItems = [
     { name: 'Dashboard', icon: FaBars, path: '/dashboard' },
-    { name: 'Clients', icon: FaUsers, path: '/clients' }, // Keeping "Clients" as the main section for patients
+    { name: 'Clients', icon: FaUsers, path: '/clients' },
     { name: 'Programs', icon: FaBookMedical, path: '/programs' },
     { name: 'Appointments', icon: FaCalendarAlt, path: '/appointments' },
     { name: 'Health Records', icon: FaFileMedical, path: '/health-records' },
@@ -102,7 +102,7 @@ function Navigation({ children }) {
             onClick={handleLogout}
             className="flex items-center p-3 rounded-lg text-gray-200 hover:bg-blue-800 hover:text-white cursor-pointer transition-colors duration-200"
           >
-            <FaUser className="text-xl" />
+            <FaSignOutAlt className="text-xl" />
             {!isCollapsed && <span className="ml-3">Logout</span>}
           </div>
         </div>
