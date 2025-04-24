@@ -3,7 +3,7 @@ import { useLocation, Link, useNavigate } from 'react-router-dom';
 import {
   FaBars,
   FaUser,
-  FaClipboardList,
+  FaUsers,
   FaEnvelope,
   FaBox,
 } from 'react-icons/fa';
@@ -16,7 +16,7 @@ function Navigation({ children }) {
   const menuItems = [
     { name: 'Dashboard', icon: FaBars, path: '/dashboard' },
     { name: 'Patients', icon: FaUser, path: '/patients' },
-    { name: 'Records', icon: FaClipboardList, path: '/records' },
+    { name: 'Clients', icon: FaUsers, path: '/clients' },
     { name: 'Messages', icon: FaEnvelope, path: '/messages' },
     { name: 'Suppliers', icon: FaBox, path: '/suppliers' },
   ];
@@ -44,17 +44,12 @@ function Navigation({ children }) {
           </Link>
         ))}
         <div className="mt-auto">
-          <img
-            src="/images/no-image.jpg"
-            alt="User Profile"
-            className="w-10 h-10 rounded-full"
-          />
-        </div>
-        <div
-          onClick={handleLogout}
-          className="p-2 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
-        >
-          <FaUser className="text-xl" />
+          <div
+            onClick={handleLogout}
+            className="p-2 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+          >
+            <FaUser className="text-xl" />
+          </div>
         </div>
       </aside>
 

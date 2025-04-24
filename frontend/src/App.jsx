@@ -7,6 +7,8 @@ import Suppliers from './pages/Suppliers';
 import ViewSupplier from './pages/ViewSupplier';
 import EditSupplier from './pages/EditSupplier';
 import UploadDocuments from './pages/UploadDocuments';
+import ClientsList from './pages/clients/ClientsList'; // Corrected path
+import ViewClient from './pages/clients/ViewClient'; // Corrected path
 import { useEffect } from 'react';
 
 function App() {
@@ -72,8 +74,9 @@ function App() {
               <Route path="/suppliers/:id" element={<ViewSupplier />} />
               <Route path="/suppliers/edit/:id" element={<EditSupplier />} />
               <Route path="/suppliers/:id/documents" element={<UploadDocuments />} />
+              <Route path="/clients" element={<ClientsList />} />
+              <Route path="/clients/:id" element={<ViewClient />} />
               <Route path="/patients" element={<div className="text-center"><h2 className="text-xl">Patients Page (Under Construction)</h2></div>} />
-              <Route path="/records" element={<div className="text-center"><h2 className="text-xl">Records Page (Under Construction)</h2></div>} />
               <Route path="/messages" element={<div className="text-center"><h2 className="text-xl">Messages Page (Under Construction)</h2></div>} />
               <Route path="/" element={<Dashboard />} />
             </Routes>
