@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Chart, registerables } from "chart.js";
 import { FaUserCircle } from 'react-icons/fa'; // Import user profile icon
 
@@ -6,16 +6,15 @@ Chart.register(...registerables);
 
 /**
  * Dashboard component displays key metrics and charts for the CEMA Health System.
- * Includes user info and logout functionality at the top.
- * @param {Object} props - Component props.
- * @param {Function} props.onLogout - Function to handle logout.
+ * Includes user info at the top.
  * @returns {JSX.Element} The dashboard page.
  */
-const Dashboard = ({ onLogout }) => {
+const Dashboard = () => {
   const patientsChartRef = useRef(null);
   const requestsChartRef = useRef(null);
   const patientsChartInstance = useRef(null);
   const requestsChartInstance = useRef(null);
+  const [showProfile, setShowProfile] = useState(false); // State to toggle profile dropdown
 
   useEffect(() => {
     // Destroy existing chart instances before creating new ones
@@ -89,8 +88,8 @@ const Dashboard = ({ onLogout }) => {
 
   return (
     <div className="flex-1">
-      {/* Header Section (Replaces Navbar) */}
-      <header className="bg-white p-4 shadow-md flex justify-end items-center">
+      {/* Header Section */}
+      <header className="bg-white p-4 shadow-md flex justify-end items-center relative">
         <div className="flex items-center space-x-4">
           <span className="text-gray-600">Hello, User</span>
           <span className="text-gray-600 flex items-center">
@@ -112,13 +111,29 @@ const Dashboard = ({ onLogout }) => {
           </span>
           <span className="text-gray-600">{currentDate}</span>
           <button
-            onClick={onLogout}
+            onClick={() => setShowProfile(!showProfile)}
             className="text-gray-600 hover:text-gray-800"
-            title="Logout"
+            title="User Profile"
           >
             <FaUserCircle className="text-2xl" />
           </button>
         </div>
+
+        {/* User Profile Dropdown */}
+        {showProfile && (
+          <div className="absolute top-14 right-4 bg-white shadow-lg rounded-lg p-4 w-64 z-10">
+            <h4 className="text-lg font-semibold text-gray-800">User Profile</h4>
+            <p className="text-sm text-gray-600">Name: John Doe</p>
+            <p className="text-sm text-gray-600">Email: john.doe@example.com</p>
+            <p className="text-sm text-gray-600">Role: Administrator</p>
+            <button
+              onClick={() => setShowProfile(false)}
+              className="mt-2 text-sm text-blue-500 hover:underline"
+            >
+              Close
+            </button>
+          </div>
+        )}
       </header>
 
       {/* Main Content */}
