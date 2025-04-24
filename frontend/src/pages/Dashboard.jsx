@@ -1,13 +1,17 @@
 import React, { useEffect, useRef } from "react";
 import { Chart, registerables } from "chart.js";
+import { FaUserCircle } from 'react-icons/fa'; // Import user profile icon
 
 Chart.register(...registerables);
 
 /**
  * Dashboard component displays key metrics and charts for the CEMA Health System.
+ * Includes user info and logout functionality at the top.
+ * @param {Object} props - Component props.
+ * @param {Function} props.onLogout - Function to handle logout.
  * @returns {JSX.Element} The dashboard page.
  */
-const Dashboard = () => {
+const Dashboard = ({ onLogout }) => {
   const patientsChartRef = useRef(null);
   const requestsChartRef = useRef(null);
   const patientsChartInstance = useRef(null);
@@ -76,8 +80,47 @@ const Dashboard = () => {
     };
   }, []);
 
+  const currentDate = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+
   return (
     <div className="flex-1">
+      {/* Header Section (Replaces Navbar) */}
+      <header className="bg-white p-4 shadow-md flex justify-end items-center">
+        <div className="flex items-center space-x-4">
+          <span className="text-gray-600">Hello, User</span>
+          <span className="text-gray-600 flex items-center">
+            <svg
+              className="w-5 h-5 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              />
+            </svg>
+            32°C Nairobi
+          </span>
+          <span className="text-gray-600">{currentDate}</span>
+          <button
+            onClick={onLogout}
+            className="text-gray-600 hover:text-gray-800"
+            title="Logout"
+          >
+            <FaUserCircle className="text-2xl" />
+          </button>
+        </div>
+      </header>
+
       {/* Main Content */}
       <main className="flex-1 p-6 bg-gray-100">
         {/* Cards Section */}
