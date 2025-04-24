@@ -22,14 +22,14 @@ function App() {
   const isLoggedIn = !!localStorage.getItem("access_token");
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    navigate("/login");
-  };
-
   useEffect(() => {
+    // If user is logged in and on the root path, redirect to dashboard
     if (isLoggedIn && window.location.pathname === '/') {
       navigate('/dashboard');
+    }
+    // If user is not logged in and not on login or reset-password, redirect to login
+    if (!isLoggedIn && !['/login', '/reset-password'].includes(window.location.pathname)) {
+      navigate('/login');
     }
   }, [isLoggedIn, navigate]);
 
@@ -40,7 +40,7 @@ function App() {
           <div className="p-6">
             <Routes>
               <Route path="/login" element={<Login />} />
-              <Route path="/dashboard" element={<Dashboard onLogout={handleLogout} />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/clients" element={<ClientsList />} />
               <Route path="/clients/:id" element={<ViewClient />} />
               <Route path="/register-client" element={<RegisterClient />} />
@@ -50,7 +50,7 @@ function App() {
               <Route path="/health-records" element={<HealthRecordsPage />} />
               <Route path="/team" element={<Team />} />
               <Route path="/messages" element={<MessagesPage />} />
-              <Route path="/" element={<Dashboard onLogout={handleLogout} />} />
+              <Route path="/" element={<Dashboard />} />
             </Routes>
           </div>
         </Navigation>
@@ -58,7 +58,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<Login isResetPassword />} />
-          <Route path="/" element={<Login />} />
+          <Route path="*" element={<Login />} /> {/* Redirect all unmatched routes to login */}
         </Routes>
       )}
     </div>
