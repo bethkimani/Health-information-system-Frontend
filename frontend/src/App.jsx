@@ -58,6 +58,7 @@ function App() {
         <div className="p-6">
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/reset-password" element={<Login isResetPassword />} />
             <Route path="/" element={<Login />} />
           </Routes>
         </div>

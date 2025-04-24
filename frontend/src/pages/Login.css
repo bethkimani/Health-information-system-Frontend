@@ -1,0 +1,30 @@
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url('/hospital.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  /* Add a semi-transparent overlay to improve text readability */
+  .login-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dark overlay with 50% opacity */
+    z-index: 1;
+  }
+  
+  /* Ensure the login form and content are above the overlay */
+  .login-container > * {
+    position: relative;
+    z-index: 2;
+  }
