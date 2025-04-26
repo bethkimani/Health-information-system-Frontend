@@ -1,33 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { fetchClients } from '../../api.js'; // Changed from getClients to fetchClients
 
-/**
- * ClientsList component displays a list of registered clients with search functionality.
- * @returns {JSX.Element} The clients list page.
- */
 function ClientsList() {
-  // Load initial clients from localStorage or use default if none exist
-  const [clients, setClients] = useState(() => {
-    const savedClients = localStorage.getItem('clients');
-    return savedClients
-      ? JSON.parse(savedClients)
-      : [
-          { id: "C001", first_name: "Jane", last_name: "Doe", dob: "1990-01-01", gender: "Female", email: "jane.doe@example.com", phone_number: "123-456-7890", programs: ["TB Treatment"] },
-          { id: "C002", first_name: "John", last_name: "Smith", dob: "1985-05-15", gender: "Male", email: "john.smith@example.com", phone_number: "234-567-8901", programs: ["Malaria Prevention"] },
-          { id: "C003", first_name: "Emily", last_name: "Brown", dob: "1995-09-20", gender: "Female", email: "emily.brown@example.com", phone_number: "345-678-9012", programs: ["HIV Care"] },
-        ];
-  });
-
-  const [filteredClients, setFilteredClients] = useState(clients);
+  const [clients, setClients] = useState([]);
+  const [filteredClients, setFilteredClients] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Update localStorage whenever clients change
   useEffect(() => {
-    localStorage.setItem('clients', JSON.stringify(clients));
-    setFilteredClients(clients);
-  }, [clients]);
+    fetchClients() // Changed from getClients to fetchClients
+      .then((response) => {
+        setClients(response.data);
+        setFilteredClients(response.data);
+      })
+      .catch((error) => console.error('Error fetching clients:', error));
+  }, []);
 
-  // Handle search functionality
   const handleSearch = (event) => {
     const value = event.target.value.toLowerCase();
     setSearchTerm(value);
