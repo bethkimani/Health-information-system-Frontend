@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from "react";
 import { Chart, registerables } from "chart.js";
 import { FaUserCircle } from 'react-icons/fa'; // Import user profile icon

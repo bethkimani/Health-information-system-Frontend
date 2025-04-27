@@ -1,68 +1,52 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import LiveChat from "../components/LiveChat";
-import "./Login.css"; // Import the CSS file for styling
+// Login.jsx
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { login } from '../api.js';
+import LiveChat from '../components/LiveChat';
+import './Login.css';
 
-/**
- * Login component handles user authentication and password reset requests.
- * Includes a live chat feature at the bottom right.
- * @param {Object} props - Component props.
- * @param {boolean} [props.isResetPassword=false] - Toggles between login and reset password modes.
- * @returns {JSX.Element} The login or reset password page.
- */
 export default function Login({ isResetPassword = false }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const navigate = useNavigate();
 
-  const dummyUsers = [
-    { email: "test@example.com", password: "password123" },
-    { email: "user@example.com", password: "userpass" },
-  ];
-
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
+    setError('');
+    setSuccess('');
 
-    const user = dummyUsers.find(
-      (u) => u.email === email && u.password === password
-    );
-
-    if (!user) {
-      setError("Invalid email or password");
-      return;
+    try {
+      const response = await login(email, password);
+      localStorage.setItem('access_token', response.data.access_token);
+      localStorage.setItem('user_role', response.data.user.role); // Store user role
+      navigate('/');
+    } catch (err) {
+      // Check if the error response has a message from the server
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('An error occurred while logging in. Please try again.');
+      }
     }
-
-    localStorage.setItem("access_token", "dummy_access_token");
-    navigate("/");
   };
 
   const handleResetPasswordSubmit = (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
+    setError('');
+    setSuccess('');
 
-    const user = dummyUsers.find((u) => u.email === email);
-
-    if (!user) {
-      setError("No account found with this email");
-      return;
-    }
-
-    // Simulate sending a reset password email
-    setSuccess("A password reset link has been sent to your email.");
-    setEmail("");
+    // Simulate password reset (not implemented in backend yet)
+    setSuccess('A password reset link has been sent to your email.');
+    setEmail('');
   };
 
   return (
     <div className="login-container">
       <div className="bg-white rounded-3xl shadow-xl relative overflow-hidden w-full max-w-3xl min-h-[480px] flex">
         <div className="w-1/2 bg-[#0056A0] flex flex-col p-10 z-10">
-          {/* Form */}
           {isResetPassword ? (
             <form onSubmit={handleResetPasswordSubmit} autoComplete="off" className="w-full">
               <h1 className="text-white text-3xl font-semibold mb-2">CEMA Health System</h1>
@@ -108,7 +92,7 @@ export default function Login({ isResetPassword = false }) {
               />
               <div className="relative w-full">
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   name="password"
                   placeholder="Enter your password"
                   value={password}
@@ -117,7 +101,7 @@ export default function Login({ isResetPassword = false }) {
                   className="bg-gray-200 border-none rounded-lg p-3 w-full mb-3 text-sm focus:outline-none pr-10"
                 />
                 <i
-                  className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"} absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer`}
+                  className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'} absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer`}
                   onClick={() => setShowPassword(!showPassword)}
                 ></i>
               </div>
@@ -128,7 +112,7 @@ export default function Login({ isResetPassword = false }) {
                 Sign In
               </button>
               <p className="text-white text-sm mt-4">
-                Forgot your password?{" "}
+                Forgot your password?{' '}
                 <Link to="/reset-password" className="underline hover:text-[#F5A623]">
                   Reset Password
                 </Link>

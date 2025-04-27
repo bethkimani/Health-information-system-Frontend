@@ -1,36 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { fetchPrograms, addProgram, deleteProgram } from '../api.js';
 
-/**
- * ProgramsPage component manages health programs, allowing doctors to view, search, and delete programs.
- * @returns {JSX.Element} The programs management page.
- */
 function ProgramsPage() {
-  // Load initial programs from localStorage or use default if none exist
-  const [programs, setPrograms] = useState(() => {
-    const savedPrograms = localStorage.getItem('programs');
-    return savedPrograms
-      ? JSON.parse(savedPrograms)
-      : [
-          { id: "P001", name: "TB Treatment", description: "Tuberculosis treatment and monitoring program" },
-          { id: "P002", name: "Malaria Prevention", description: "Malaria prevention and education program" },
-          { id: "P003", name: "HIV Care", description: "HIV/AIDS care and support program" },
-        ];
-  });
-
-  const [filteredPrograms, setFilteredPrograms] = useState(programs);
+  const [programs, setPrograms] = useState([]);
+  const [filteredPrograms, setFilteredPrograms] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState(''); // Added to handle errors
 
-  // Update localStorage whenever programs change
   useEffect(() => {
-    localStorage.setItem('programs', JSON.stringify(programs));
-    setFilteredPrograms(programs);
-  }, [programs]);
+    fetchPrograms()
+      .then((response) => {
+        setPrograms(response.data);
+        setFilteredPrograms(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching programs:', error);
+        setError('Failed to load programs. Please try again.');
+      });
+  }, []);
 
-  // Handle search functionality
   const handleSearch = (event) => {
     const value = event.target.value.toLowerCase();
     setSearchTerm(value);
@@ -41,26 +33,37 @@ function ProgramsPage() {
     );
   };
 
-  // Handle program deletion
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!selectedId) return;
-    setPrograms(programs.filter(program => program.id !== selectedId));
-    setShowConfirm(false);
-    setSelectedId(null);
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
+    try {
+      await deleteProgram(selectedId);
+      setPrograms(programs.filter((program) => program.id !== selectedId));
+      setFilteredPrograms(filteredPrograms.filter((program) => program.id !== selectedId));
+      setShowConfirm(false);
+      setSelectedId(null);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    } catch (error) {
+      console.error('Error deleting program:', error);
+      setError('Failed to delete program. Please try again.');
+    }
   };
 
   return (
     <div className={showConfirm ? "p-6 bg-white shadow-md rounded-lg opacity-50" : "p-6 bg-white shadow-md rounded-lg"}>
       <h1 className="text-2xl font-bold text-blue-900 mb-4">HEALTH PROGRAMS</h1>
-      
-      {/* Search & Add Program */}
+
+      {error && (
+        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+          {error}
+        </div>
+      )}
+
       <div className="mb-4 flex justify-between items-center">
         <div className="relative">
-          <input 
-            type="text" 
-            placeholder="Search by Program Name" 
+          <input
+            type="text"
+            placeholder="Search by Program Name"
             value={searchTerm}
             onChange={handleSearch}
             className="border border-blue-300 rounded-md p-2 pl-10 focus:ring-blue-500 focus:outline-none"
@@ -71,11 +74,10 @@ function ProgramsPage() {
         </button>
       </div>
 
-      {/* Programs Table */}
       <table className="w-full border-collapse border border-gray-200">
         <thead>
           <tr className="bg-gray-100 text-blue-900">
- даними            <th className="border border-gray-200 px-4 py-2">PROGRAM ID</th>
+            <th className="border border-gray-200 px-4 py-2">PROGRAM ID</th>
             <th className="border border-gray-200 px-4 py-2">PROGRAM NAME</th>
             <th className="border border-gray-200 px-4 py-2">DESCRIPTION</th>
             <th className="border border-gray-200 px-4 py-2">ACTIONS</th>
@@ -89,19 +91,19 @@ function ProgramsPage() {
                 <td className="border border-gray-200 px-4 py-2">{program.name}</td>
                 <td className="border border-gray-200 px-4 py-2">{program.description}</td>
                 <td className="border border-gray-200 px-4 py-2 flex justify-center space-x-4">
-                  <Link 
-                    to={`/view-program/${program.id}`} 
+                  <Link
+                    to={`/view-program/${program.id}`}
                     className="text-blue-900 hover:text-blue-700 font-semibold"
                   >
                     View Program
                   </Link>
-                  <Link 
-                    to={`/edit-program/${program.id}`} 
+                  <Link
+                    to={`/edit-program/${program.id}`}
                     className="text-blue-900 hover:text-blue-700 font-semibold"
                   >
                     Edit Program
                   </Link>
-                  <button 
+                  <button
                     className="text-red-600 hover:text-red-800 font-semibold"
                     onClick={() => {
                       setSelectedId(program.id);
@@ -123,20 +125,19 @@ function ProgramsPage() {
         </tbody>
       </table>
 
-      {/* Delete Confirmation Modal */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-md shadow-lg">
             <h2 className="text-lg font-bold text-blue-900">Delete Program</h2>
             <p className="text-gray-600">Are you sure you want to delete this program? This action cannot be undone.</p>
             <div className="flex justify-end space-x-2 mt-4">
-              <button 
+              <button
                 className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400"
                 onClick={() => setShowConfirm(false)}
               >
                 Cancel
               </button>
-              <button 
+              <button
                 className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
                 onClick={handleDelete}
               >
@@ -146,13 +147,13 @@ function ProgramsPage() {
           </div>
         </div>
       )}
-      
+
       {showSuccess && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-md shadow-lg text-center">
             <h2 className="text-lg font-bold text-blue-900">Success</h2>
             <p className="text-green-600 font-semibold mt-2">✅ Program deleted successfully!</p>
-            <button 
+            <button
               className="bg-blue-900 text-white px-4 py-2 rounded-md hover:bg-blue-800 mt-4"
               onClick={() => setShowSuccess(false)}
             >

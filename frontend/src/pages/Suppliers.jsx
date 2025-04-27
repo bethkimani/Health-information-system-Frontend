@@ -1,232 +1,383 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Navigation from "../components/Navigation";
+import React, { useState, useEffect } from 'react';
+import { fetchSuppliers, addSupplier, updateSupplier, deleteSupplier } from '../api';
 
-// Mock data for simulation
-const mockSuppliers = [
-  {
-    id: 1,
-    name: "MediSupply Co.",
-    email: "contact@medisupply.com",
-    phone: "+254 712 345 678",
-    status: true,
-  },
-  {
-    id: 2,
-    name: "LabEquip Ltd.",
-    email: "info@labeuip.com",
-    phone: "+254 723 456 789",
-    status: false,
-  },
-];
-
-const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, supplierName }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold mb-4">Delete Supplier</h3>
-        <p>Are you sure you want to delete <strong>{supplierName}</strong>?</p>
-        <div className="flex justify-end gap-2 mt-4">
-          <button className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400" onClick={onClose}>
-            Cancel
-          </button>
-          <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700" onClick={onConfirm}>
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const Suppliers = () => {
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [dropdownOpen, setDropdownOpen] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedSupplier, setSelectedSupplier] = useState(null);
+export default function Suppliers() {
   const [suppliers, setSuppliers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [editingSupplier, setEditingSupplier] = useState(null);
+  const [newSupplier, setNewSupplier] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    bio: '',
+    license_number: '',
+    address: '',
+    city: '',
+    country: '',
+    county: '',
+    postal_code: '',
+    contact_person_name: '',
+    contact_person_email: '',
+    contact_person_phone: '',
+    status: true,
+    contract_start_date: '',
+    contract_end_date: '',
+    supply_category: '',
+    certifications: '',
+    delivery_frequency: '',
+    next_delivery_date: '',
+    delivery_notes: '',
+  });
 
   useEffect(() => {
-    // Simulate fetching suppliers
-    setSuppliers(mockSuppliers);
+    const loadSuppliers = async () => {
+      try {
+        const response = await fetchSuppliers();
+        setSuppliers(response.data);
+      } catch (error) {
+        console.error('Error fetching suppliers:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadSuppliers();
   }, []);
 
-  const navigate = useNavigate();
-
-  const handleSearchChange = (e) => setSearch(e.target.value);
-  const handleTabChange = (status) => setStatusFilter(status);
-  const handleDropdownToggle = (index) => setDropdownOpen(dropdownOpen === index ? null : index);
-
-  const filteredSuppliers = suppliers.filter(
-    (supplier) =>
-      supplier.name.toLowerCase().includes(search.toLowerCase()) &&
-      (statusFilter === "all" || String(supplier.status) === statusFilter)
-  );
-
-  const handleDeleteSupplier = (supplier) => {
-    setSelectedSupplier(supplier);
-    setModalOpen(true);
-  };
-
-  const toggleSupplierStatus = (supplier) => {
-    // Simulate toggling supplier status
-    const updatedSuppliers = suppliers.map((s) =>
-      s.id === supplier.id ? { ...s, status: !s.status } : s
-    );
-    setSuppliers(updatedSuppliers);
-  };
-
-  const confirmDelete = () => {
-    if (selectedSupplier) {
-      // Simulate deleting supplier
-      const updatedSuppliers = suppliers.filter((s) => s.id !== selectedSupplier.id);
-      setSuppliers(updatedSuppliers);
-      setModalOpen(false);
-      setSelectedSupplier(null);
-      alert("Supplier deleted successfully");
+  const handleAddSupplier = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingSupplier) {
+        await updateSupplier(editingSupplier.id, newSupplier);
+      } else {
+        await addSupplier(newSupplier);
+      }
+      const response = await fetchSuppliers();
+      setSuppliers(response.data);
+      setShowModal(false);
+      setEditingSupplier(null);
+      setNewSupplier({
+        name: '',
+        email: '',
+        phone: '',
+        bio: '',
+        license_number: '',
+        address: '',
+        city: '',
+        country: '',
+        county: '',
+        postal_code: '',
+        contact_person_name: '',
+        contact_person_email: '',
+        contact_person_phone: '',
+        status: true,
+        contract_start_date: '',
+        contract_end_date: '',
+        supply_category: '',
+        certifications: '',
+        delivery_frequency: '',
+        next_delivery_date: '',
+        delivery_notes: '',
+      });
+    } catch (error) {
+      console.error('Error saving supplier:', error);
     }
   };
 
+  const handleEditSupplier = (supplier) => {
+    setEditingSupplier(supplier);
+    setNewSupplier({ ...supplier });
+    setShowModal(true);
+  };
+
+  const handleDeleteSupplier = async (id) => {
+    if (window.confirm('Are you sure you want to delete this supplier?')) {
+      try {
+        await deleteSupplier(id);
+        const response = await fetchSuppliers();
+        setSuppliers(response.data);
+      } catch (error) {
+        console.error('Error deleting supplier:', error);
+      }
+    }
+  };
+
+  if (loading) return <div>Loading...</div>;
+
   return (
-    
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-2xl font-semibold text-gray-800">Suppliers</h3>
-          <div className="flex gap-4">
-            <input
-              type="text"
-              placeholder="Search suppliers..."
-              className="border border-gray-300 rounded-md p-2"
-              value={search}
-              onChange={handleSearchChange}
-            />
-            <div className="flex gap-2">
-              <button
-                className={`px-4 py-2 rounded-md ${
-                  statusFilter === "all" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
-                }`}
-                onClick={() => handleTabChange("all")}
-              >
-                All
-              </button>
-              <button
-                className={`px-4 py-2 rounded-md ${
-                  statusFilter === "true" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
-                }`}
-                onClick={() => handleTabChange("true")}
-              >
-                Active
-              </button>
-              <button
-                className={`px-4 py-2 rounded-md ${
-                  statusFilter === "false" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
-                }`}
-                onClick={() => handleTabChange("false")}
-              >
-                Inactive
-              </button>
-            </div>
-            <button
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              onClick={() => navigate("/suppliers/create-supplier")}
-            >
-              + Add Supplier
-            </button>
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-semibold">Suppliers</h1>
+        <button
+          onClick={() => {
+            setEditingSupplier(null);
+            setShowModal(true);
+          }}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Add Supplier
+        </button>
+      </div>
+
+      <div className="bg-white shadow rounded-lg overflow-hidden">
+        <table className="min-w-full">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="text-left p-4">ID</th>
+              <th className="text-left p-4">Name</th>
+              <th className="text-left p-4">Email</th>
+              <th className="text-left p-4">Phone</th>
+              <th className="text-left p-4">Status</th>
+              <th className="text-left p-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {suppliers.map((supplier) => (
+              <tr key={supplier.id} className="border-t">
+                <td className="p-4">{supplier.id}</td>
+                <td className="p-4">{supplier.name}</td>
+                <td className="p-4">{supplier.email}</td>
+                <td className="p-4">{supplier.phone}</td>
+                <td className="p-4">{supplier.status ? 'Active' : 'Inactive'}</td>
+                <td className="p-4">
+                  <button
+                    onClick={() => handleEditSupplier(supplier)}
+                    className="text-blue-600 hover:text-blue-800 mr-2"
+                  >
+                    <i className="fas fa-edit"></i>
+                  </button>
+                  <button
+                    onClick={() => handleDeleteSupplier(supplier.id)}
+                    className="text-red-600 hover:text-red-800"
+                  >
+                    <i className="fas fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl overflow-y-auto max-h-[80vh]">
+            <h2 className="text-xl font-semibold mb-4">
+              {editingSupplier ? 'Edit Supplier' : 'Add New Supplier'}
+            </h2>
+            <form onSubmit={handleAddSupplier}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Name</label>
+                  <input
+                    type="text"
+                    value={newSupplier.name}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, name: e.target.value })}
+                    className="w-full p-2 border rounded"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={newSupplier.email}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, email: e.target.value })}
+                    className="w-full p-2 border rounded"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Phone</label>
+                  <input
+                    type="text"
+                    value={newSupplier.phone}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, phone: e.target.value })}
+                    className="w-full p-2 border rounded"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Bio</label>
+                  <textarea
+                    value={newSupplier.bio || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, bio: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">License Number</label>
+                  <input
+                    type="text"
+                    value={newSupplier.license_number || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, license_number: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Address</label>
+                  <input
+                    type="text"
+                    value={newSupplier.address || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, address: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">City</label>
+                  <input
+                    type="text"
+                    value={newSupplier.city || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, city: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Country</label>
+                  <input
+                    type="text"
+                    value={newSupplier.country || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, country: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">County</label>
+                  <input
+                    type="text"
+                    value={newSupplier.county || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, county: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Postal Code</label>
+                  <input
+                    type="text"
+                    value={newSupplier.postal_code || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, postal_code: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Contact Person Name</label>
+                  <input
+                    type="text"
+                    value={newSupplier.contact_person_name || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, contact_person_name: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Contact Person Email</label>
+                  <input
+                    type="email"
+                    value={newSupplier.contact_person_email || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, contact_person_email: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Contact Person Phone</label>
+                  <input
+                    type="text"
+                    value={newSupplier.contact_person_phone || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, contact_person_phone: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Status</label>
+                  <select
+                    value={newSupplier.status}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, status: e.target.value === 'true' })}
+                    className="w-full p-2 border rounded"
+                  >
+                    <option value={true}>Active</option>
+                    <option value={false}>Inactive</option>
+                  </select>
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Contract Start Date</label>
+                  <input
+                    type="date"
+                    value={newSupplier.contract_start_date || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, contract_start_date: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Contract End Date</label>
+                  <input
+                    type="date"
+                    value={newSupplier.contract_end_date || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, contract_end_date: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Supply Category</label>
+                  <input
+                    type="text"
+                    value={newSupplier.supply_category || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, supply_category: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Certifications</label>
+                  <textarea
+                    value={newSupplier.certifications || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, certifications: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Delivery Frequency</label>
+                  <input
+                    type="text"
+                    value={newSupplier.delivery_frequency || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, delivery_frequency: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Next Delivery Date</label>
+                  <input
+                    type="date"
+                    value={newSupplier.next_delivery_date || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, next_delivery_date: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Delivery Notes</label>
+                  <textarea
+                    value={newSupplier.delivery_notes || ''}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, delivery_notes: e.target.value })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end mt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="mr-2 px-4 py-2 text-gray-600 hover:text-gray-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  {editingSupplier ? 'Update Supplier' : 'Add Supplier'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-
-        <div className="bg-white rounded-lg shadow-md">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="text-left text-gray-600">
-                <th className="p-4">#</th>
-                <th className="p-4">Name</th>
-                <th className="p-4">Email</th>
-                <th className="p-4">Phone</th>
-                <th className="p-4">Status</th>
-                <th className="p-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredSuppliers.length > 0 ? (
-                filteredSuppliers.map((supplier, index) => (
-                  <tr key={index} className="border-t">
-                    <td className="p-4">{index + 1}</td>
-                    <td className="p-4">{supplier.name}</td>
-                    <td className="p-4">{supplier.email}</td>
-                    <td className="p-4">{supplier.phone}</td>
-                    <td className="p-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm ${
-                          supplier.status ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {supplier.status ? "Active" : "Inactive"}
-                      </span>
-                    </td>
-                    <td className="p-4 flex gap-2">
-                      <button
-                        className="text-blue-600 hover:text-blue-800"
-                        onClick={() => navigate(`/suppliers/${supplier.id}`)}
-                      >
-                        View
-                      </button>
-                      <div className="relative">
-                        <button
-                          className="text-gray-600 hover:text-gray-800"
-                          onClick={() => handleDropdownToggle(index)}
-                        >
-                          ⋮
-                        </button>
-                        {dropdownOpen === index && (
-                          <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
-                            <button
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                              onClick={() => navigate(`/suppliers/edit/${supplier.id}`)}
-                            >
-                              Edit Supplier
-                            </button>
-                            <button
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                              onClick={() => handleDeleteSupplier(supplier)}
-                            >
-                              Delete Supplier
-                            </button>
-                            <button
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                              onClick={() => toggleSupplierStatus(supplier)}
-                            >
-                              {supplier.status ? "Deactivate Supplier" : "Activate Supplier"}
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="p-4 text-center text-gray-600">
-                    No suppliers available
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <DeleteConfirmationModal
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
-          onConfirm={confirmDelete}
-          supplierName={selectedSupplier?.name}
-        />
-      </div>
-    
+      )}
+    </div>
   );
-};
-
-export default Suppliers;
+}

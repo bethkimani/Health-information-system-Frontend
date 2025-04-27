@@ -1,19 +1,54 @@
+// src/components/ClientsList.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchClients } from '../../api.js'; // Changed from getClients to fetchClients
+import { fetchClients } from '../../api.js';
 
 function ClientsList() {
   const [clients, setClients] = useState([]);
   const [filteredClients, setFilteredClients] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+
+  const maxRetries = 3;
+  const retryDelay = 2000; // 2 seconds
+
+  const loadClients = async () => {
+    if (retryCount >= maxRetries) {
+      setError('Failed to load clients after multiple attempts. Please check your network connection or try again later.');
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetchClients();
+      const fetchedClients = response.data || [];
+      setClients(fetchedClients);
+      setFilteredClients(fetchedClients);
+      setRetryCount(0);
+    } catch (error) {
+      console.error('Error fetching clients:', error);
+      const errorMessage = error.message || 'Failed to load clients. Please try again.';
+      setError(errorMessage);
+
+      // Retry only if the error is a network error (status: 0)
+      if (error.status === 0) {
+        setTimeout(() => {
+          setRetryCount(retryCount + 1);
+          loadClients();
+        }, retryDelay);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetchClients() // Changed from getClients to fetchClients
-      .then((response) => {
-        setClients(response.data);
-        setFilteredClients(response.data);
-      })
-      .catch((error) => console.error('Error fetching clients:', error));
+    loadClients();
   }, []);
 
   const handleSearch = (event) => {
@@ -33,13 +68,17 @@ function ClientsList() {
           <h2 className="text-2xl font-bold text-blue-900">Clients</h2>
           <div className="flex gap-3">
             <button className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition">
-              <Link to="/add-program">Create Program</Link>
-            </button>
-            <button className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition">
               <Link to="/register-client">Register Client</Link>
             </button>
           </div>
         </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+            {error}
+            {retryCount < maxRetries && retryCount > 0 && ` Retrying (${retryCount}/${maxRetries})...`}
+          </div>
+        )}
 
         <div className="mb-6">
           <input
@@ -64,7 +103,13 @@ function ClientsList() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredClients.length > 0 ? (
+              {loading && retryCount === 0 ? (
+                <tr>
+                  <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                    Loading clients...
+                  </td>
+                </tr>
+              ) : filteredClients.length > 0 ? (
                 filteredClients.map((client) => (
                   <tr key={client.id} className="hover:bg-gray-50 transition">
                     <td className="px-6 py-4 text-gray-800">{client.id}</td>
