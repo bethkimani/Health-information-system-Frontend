@@ -1,14 +1,9 @@
-use this to login:https://health-information-system-frontend.onrender.com/
+
+
+
+Locally it is supposed to login: http://localhost:5173
 email:admin@cema.com
-password:admin123
-
-
-Locally it is supposed to login:
-email:admin@cema.com
-password:admin123
-
-
-
+password:admin
 
 ### Health-Information-System-Frontend
 Center for Epidemiological Modelling and Analysis (CEMA) Project
