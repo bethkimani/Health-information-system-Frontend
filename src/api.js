@@ -1,7 +1,7 @@
 // api.js - Changes to fix the JWT handling and CORS issue
 import axios from 'axios';
 
-const API_URL = 'https://health-inforamtion-system-backend.onrender.com/api'; // Use localhost for consistency
+const API_URL = 'http://localhost:5000/api'; // Use localhost for consistency
 
 const api = axios.create({
   baseURL: API_URL,
