@@ -3,6 +3,11 @@ email:admin@cema.com
 password:admin123
 
 
+Locally it is supposed to login:
+email:admin@cema.com
+password:admin123
+
+
 
 
 ### Health-Information-System-Frontend
